@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
+import { LogoutLink, PortalLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { CreditCard, LogOut, User } from "lucide-react";
 
 const user = {
@@ -41,13 +41,19 @@ export function UserNav() {
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User />
-            Account
+
+          <DropdownMenuItem asChild>
+            <PortalLink>
+              <User />
+              Account
+            </PortalLink>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
+
+          <DropdownMenuItem asChild>
+            <PortalLink>
+              <CreditCard />
+              Billing
+            </PortalLink>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
