@@ -9,10 +9,15 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { workspaceSchema } from "@/app/schemas/workspace";
+import { workspaceSchema, WorkspaceSchemaType } from "@/app/schemas/workspace";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 export function CreateWorkSpace() {
   const [open, setOpen] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   // 1. Define your form.
   const form = useForm({
@@ -22,11 +27,25 @@ export function CreateWorkSpace() {
     }
   });
 
+  const createWorkspaceMutation = useMutation(
+    orpc.workspace.create.mutationOptions({
+      onSuccess: (newWorkspace) => {
+        toast.success(`Workspace ${newWorkspace.workspaceName} created successfully`);
+        queryClient.invalidateQueries({
+          queryKey: orpc.workspace.list.queryKey(),
+        });
+        form.reset();
+        setOpen(false);
+      },
+      onError: () => {
+        toast.error("Failed to create workspace, try again!");
+      }
+    })
+  )
+
   // 2. Define a submit handler.
-  function onSubmit() {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log("values")
+  function onSubmit(values: WorkspaceSchemaType) {
+    createWorkspaceMutation.mutate(values);
   }
 
 
@@ -64,8 +83,17 @@ export function CreateWorkSpace() {
                 </FormItem>
               )}
             />
-            <Button type="submit">
-              Create Workspace
+            <Button size={"sm"} disabled={createWorkspaceMutation.isPending} type="submit">
+              {
+                createWorkspaceMutation.isPending ? (
+                  <>
+                    Please wait...
+                    <Spinner />
+                  </>
+                ): (
+                  "Create Workspace"
+                )
+              }
             </Button>
           </form>
         </Form>
