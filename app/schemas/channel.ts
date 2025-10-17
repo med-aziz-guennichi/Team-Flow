@@ -16,7 +16,7 @@ export const channelNameSchema = z.object({
     .transform((name, ctx) => {
       const transformed = transformChannelName(name);
 
-      if(transformed.length < 2) {
+      if (transformed.length < 2) {
         ctx.addIssue({
           code: 'custom',
           message: 'Channel name must contain at least 2 characters after transformation'
@@ -26,3 +26,7 @@ export const channelNameSchema = z.object({
       return transformed;
     })
 });
+
+
+
+export type ChannelSchemaNameType = z.infer<typeof channelNameSchema>;
